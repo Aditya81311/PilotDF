@@ -1,6 +1,7 @@
 # Environment
 .env
 .venv
+.key
 venv/
 env/
 
