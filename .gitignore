@@ -1,0 +1,37 @@
+# Environment
+.env
+.venv
+venv/
+env/
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
+
+# Flask
+instance/
+flask_session/
+
+# PilotDF - temp session data
+uploads/
+*.pkl
+*.csv
+
+# Exports
+*.pdf
+
+# IDE
+.vscode/
+.idea/
+*.DS_Store
+
+# Distribution
+dist/
+build/
+*.egg-info/
+
+# Logs
+*.log
