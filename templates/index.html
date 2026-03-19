@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>PilotDF — Upload</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <div class="nav-brand">
+      <span class="brand-icon">✈</span>
+      <span class="brand-name">PilotDF</span>
+    </div>
+    <div class="nav-actions">
+      <button class="theme-toggle" id="themeToggle" title="Toggle dark mode">
+        <span id="themeIcon">🌙</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <main class="main">
+    <div class="hero">
+      <div class="hero-badge">No-code Data Analysis</div>
+      <h1 class="hero-title">Your data, in the <span class="accent">pilot seat</span></h1>
+      <p class="hero-sub">Upload a CSV or Excel file to instantly clean, transform, visualize, and export your data — no code needed.</p>
+    </div>
+
+    <!-- UPLOAD CARD -->
+    <div class="upload-card" id="uploadCard">
+      <div class="drop-zone" id="dropZone">
+        <div class="drop-icon">📂</div>
+        <p class="drop-title">Drop your file here</p>
+        <p class="drop-sub">or click to browse</p>
+        <p class="drop-hint">Supports CSV, XLSX, XLS · Max 50MB</p>
+        <input type="file" id="fileInput" accept=".csv,.xlsx,.xls" hidden/>
+      </div>
+
+      <!-- FILE SELECTED STATE -->
+      <div class="file-selected" id="fileSelected" style="display:none;">
+        <div class="file-icon">📄</div>
+        <div class="file-details">
+          <span class="file-name" id="selectedFileName">—</span>
+          <span class="file-size" id="selectedFileSize">—</span>
+        </div>
+        <button class="file-remove" id="fileRemove">✕</button>
+      </div>
+
+      <!-- UPLOAD BUTTON -->
+      <button class="upload-btn" id="uploadBtn" disabled>
+        <span id="uploadBtnText">Select a file to continue</span>
+        <span class="upload-spinner" id="uploadSpinner" style="display:none;">⏳</span>
+      </button>
+
+      <!-- ERROR MESSAGE -->
+      <div class="upload-error" id="uploadError" style="display:none;"></div>
+    </div>
+
+    <!-- FEATURES -->
+    <div class="features-grid">
+      <div class="feature-item">
+        <span class="feature-icon">🧹</span>
+        <span class="feature-label">Clean</span>
+        <span class="feature-desc">Fix nulls, duplicates & types</span>
+      </div>
+      <div class="feature-item">
+        <span class="feature-icon">⚙️</span>
+        <span class="feature-label">Transform</span>
+        <span class="feature-desc">Create columns & normalize</span>
+      </div>
+      <div class="feature-item">
+        <span class="feature-icon">📊</span>
+        <span class="feature-label">Visualize</span>
+        <span class="feature-desc">Charts & graphs</span>
+      </div>
+      <div class="feature-item">
+        <span class="feature-icon">📄</span>
+        <span class="feature-label">Report</span>
+        <span class="feature-desc">Export PDF & HTML</span>
+      </div>
+    </div>
+  </main>
+
+  <script src="{{ url_for('static', filename='js/index.js') }}"></script>
+</body>
+</html>

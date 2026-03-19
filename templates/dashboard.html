@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>PilotDF — Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <div class="nav-brand">
+      <span class="brand-icon">✈</span>
+      <span class="brand-name">PilotDF</span>
+    </div>
+    <div class="nav-links">
+      <a href="/dashboard" class="nav-link active">Dashboard</a>
+      <a href="/view" class="nav-link">View Data</a>
+      <a href="/clean" class="nav-link">Clean</a>
+      <a href="/transform" class="nav-link">Transform</a>
+      <a href="/visualize" class="nav-link">Visualize</a>
+      <a href="/report" class="nav-link">Report</a>
+    </div>
+    <div class="nav-actions">
+      <button class="theme-toggle" id="themeToggle" title="Toggle dark mode">
+        <span id="themeIcon">🌙</span>
+      </button>
+      <a href="/reset" class="btn-reset">Reset</a>
+    </div>
+  </nav>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <!-- FILE INFO BAR -->
+    <section class="file-info-bar">
+      <div class="file-info-item">
+        <span class="file-info-label">File</span>
+        <span class="file-info-value" id="fileName">titanic.csv</span>
+      </div>
+      <div class="file-info-divider"></div>
+      <div class="file-info-item">
+        <span class="file-info-label">Rows</span>
+        <span class="file-info-value" id="rowCount">891</span>
+      </div>
+      <div class="file-info-divider"></div>
+      <div class="file-info-item">
+        <span class="file-info-label">Columns</span>
+        <span class="file-info-value" id="colCount">12</span>
+      </div>
+      <div class="file-info-divider"></div>
+      <div class="file-info-item">
+        <span class="file-info-label">Size</span>
+        <span class="file-info-value" id="fileSize">84.4 KB</span>
+      </div>
+      <div class="file-info-divider"></div>
+      <div class="file-info-item">
+        <span class="file-info-label">Memory</span>
+        <span class="file-info-value" id="memSize">102.3 KB</span>
+      </div>
+    </section>
+
+    <!-- HEALTH + ACTIONS ROW -->
+    <section class="health-actions-row">
+
+      <!-- DATA HEALTH CARD -->
+      <div class="health-card card">
+        <div class="card-header">
+          <span class="card-title">Data Health</span>
+          <span class="health-badge warn" id="healthBadge">Needs Attention</span>
+        </div>
+        <div class="health-metrics">
+          <div class="health-metric">
+            <div class="metric-top">
+              <span class="metric-label">Null Values</span>
+              <span class="metric-value warn" id="nullPct">19.9%</span>
+            </div>
+            <div class="metric-bar">
+              <div class="metric-bar-fill warn" id="nullBar" style="width: 19.9%"></div>
+            </div>
+          </div>
+          <div class="health-metric">
+            <div class="metric-top">
+              <span class="metric-label">Duplicate Rows</span>
+              <span class="metric-value ok" id="dupCount">0</span>
+            </div>
+            <div class="metric-bar">
+              <div class="metric-bar-fill ok" id="dupBar" style="width: 0%"></div>
+            </div>
+          </div>
+        </div>
+        <div class="health-issues" id="healthIssues">
+          <div class="issue-item">
+            <span class="issue-dot warn"></span>
+            <span>Age has 19.9% null values</span>
+          </div>
+          <div class="issue-item">
+            <span class="issue-dot warn"></span>
+            <span>Cabin has 77.1% null values</span>
+          </div>
+          <div class="issue-item">
+            <span class="issue-dot ok"></span>
+            <span>No duplicate rows found</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- QUICK ACTIONS -->
+      <div class="quick-actions-card card">
+        <div class="card-header">
+          <span class="card-title">Quick Actions</span>
+        </div>
+        <div class="quick-actions-grid">
+          <a href="/clean" class="action-btn primary">
+            <span class="action-icon">🧹</span>
+            <span class="action-label">Start Cleaning</span>
+            <span class="action-desc">Fix nulls, duplicates &amp; types</span>
+          </a>
+          <a href="/visualize" class="action-btn">
+            <span class="action-icon">📊</span>
+            <span class="action-label">Visualize</span>
+            <span class="action-desc">Charts &amp; graphs</span>
+          </a>
+          <a href="/view" class="action-btn">
+            <span class="action-icon">🔍</span>
+            <span class="action-label">View Data</span>
+            <span class="action-desc">Browse all rows</span>
+          </a>
+          <a href="/report" class="action-btn">
+            <span class="action-icon">📄</span>
+            <span class="action-label">Report</span>
+            <span class="action-desc">Auto-generate summary</span>
+          </a>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- OVERVIEW TABLE -->
+    <section class="overview-section card">
+      <div class="section-header">
+        <span class="section-title">Column Overview</span>
+        <span class="section-sub" id="colCountLabel">Showing all 12 columns</span>
+      </div>
+      <div class="table-wrapper">
+        <table class="overview-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Column</th>
+              <th>Type</th>
+              <th>Count</th>
+              <th>Null %</th>
+              <th>Unique</th>
+              <th>Mean</th>
+              <th>Min</th>
+              <th>Max</th>
+            </tr>
+          </thead>
+          <tbody id="overviewBody">
+            <!-- Populated by dashboard.js -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+</body>
+</html>

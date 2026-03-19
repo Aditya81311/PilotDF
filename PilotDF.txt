@@ -1,0 +1,299 @@
+# PilotDF — Full Project Blueprint
+
+---
+
+## 1. Project Overview
+
+A low-code / no-code data analysis platform for both technical and non-technical users.
+Users upload a CSV/Excel file and can clean, transform, visualize, and export their data — no coding required.
+
+---
+
+## 2. Tech Stack
+
+| Layer | Tools |
+|-------|-------|
+| Backend | Flask, Pandas, NumPy, OpenPyXL, Flask-Session |
+| File Handling | Werkzeug, UUID temp folders, os/shutil |
+| Export | FPDF2 / WeasyPrint (PDF), BytesIO (CSV) |
+| Frontend | Bootstrap 5, Custom CSS, Chart.js, Vanilla JS + Fetch API |
+| Database | None for MVP |
+| Auth | Session-based, no login for MVP |
+| Deployment | Render (free tier) |
+
+---
+
+## 3. Data Handling
+
+- No database for data operations
+- Each upload creates a **UUID-named temp folder** per session
+- Flask session stores only the UUID folder path
+
+```
+uploads/
+└── uuid-session-id/
+    ├── original.csv      ← never touched, used for reset
+    ├── working.pkl       ← current state, all ops applied here
+    └── ops_log.json      ← operation history for undo
+```
+
+- All operations → load `working.pkl` → modify DataFrame → re-save as pickle
+- Download → convert pickle to CSV → serve → cleanup on session end
+
+---
+
+## 4. Architecture
+
+```
+PilotDF/
+├── app.py                  ← entry point, registers blueprints, session config
+├── config.py               ← upload folder, secret key, etc.
+├── requirements.txt
+├── .key                    ← secret key (never commit)
+│
+├── backend/                ← pure Python, no Flask
+│   ├── __init__.py
+│   ├── file_handler.py
+│   ├── analyzer.py
+│   ├── cleaner.py
+│   ├── transformer.py
+│   └── visualizer.py
+│
+├── blueprints/             ← Flask blueprints, one per feature
+│   ├── __init__.py
+│   ├── dashboard.py
+│   ├── view_data.py
+│   ├── clean.py
+│   ├── transform.py
+│   ├── visualize.py
+│   └── report.py
+│
+├── static/
+│   ├── css/
+│   │   └── style.css
+│   └── js/
+│       └── main.js
+│
+├── templates/
+│   ├── base.html
+│   ├── index.html
+│   ├── dashboard.html
+│   ├── view_data.html
+│   ├── clean.html
+│   ├── transform.html
+│   ├── visualize.html
+│   └── report.html
+│
+└── uploads/
+```
+
+**Flow:**
+```
+Request → app.py → blueprint (blueprints/) → backend (cleaner.py etc.) → response
+```
+
+---
+
+## 5. Navbar Structure
+
+```
+Dashboard → View Data → Clean → Transform → Visualize → Report
+```
+
+---
+
+## 6. Dashboard (after upload)
+
+```
+├── File Info Bar        → filename, rows, columns, file size
+├── Data Health Card     → null %, duplicate rows, memory size, auto-detected issues
+├── Overview Table       → column + type + describe stats
+└── Quick Action Buttons → "Start Cleaning" | "Visualize" | "View Data"
+```
+
+---
+
+## 7. View Options (Tabs)
+
+```
+├── Tab 1: Overview    → column name + type + describe stats (default landing)
+├── Tab 2: View Data   → paginated table (25 rows default, options: 25/50/100)
+├── Tab 3: Clean       → (later)
+└── Tab 4: Visualize   → (later)
+```
+
+---
+
+## 8. Clean Options (UX)
+
+```
+├── Right-click on column  → shortcut + context carrier
+│   ├── Clean      → Clean Tab     (column pre-selected)
+│   ├── Visualize  → Visualize Tab (column pre-selected as X-axis)
+│   ├── Transform  → Transform Tab (column pre-selected)
+│   └── Report     → quick stat card for that column
+└── Clean Tab (navbar)     → bulk/global operations with preview & download
+```
+
+Column passed via URL param or JS state when switching tabs.
+
+---
+
+## 9. Clean Tab
+
+```
+├── Left Sidebar     → list of columns (click to select)
+├── Operation Panel  → per-column operations
+│   ├── Fill nulls (mean / median / mode / custom value)
+│   ├── Drop rows with nulls
+│   ├── Drop column if null % above threshold
+│   ├── Rename column
+│   ├── Drop column
+│   ├── Change data type (int, float, str, datetime)
+│   ├── Reorder columns
+│   ├── Find & Replace
+│   ├── Trim whitespace
+│   └── Change case (UPPER / lower / Title)
+├── Global Section   → Remove duplicates | Drop all nulls (dataset-wide)
+├── Preview Panel    → before / after comparison
+└── Apply + Download button
+```
+
+---
+
+## 10. Transform Tab
+
+```
+├── Left Sidebar      → column list
+├── Operations Panel
+│   ├── Create new column (formula-based, e.g. col_a + col_b)
+│   ├── Normalize / Standardize (min-max, z-score)
+│   ├── Encode categorical (label encoding, one-hot)
+│   ├── Bin numeric column (e.g. age → age groups)
+│   ├── Extract from datetime (year, month, day, weekday)
+│   └── Apply math (log, sqrt, abs, round)
+├── Preview Panel     → before / after
+└── Apply + Download button
+```
+
+---
+
+## 11. Visualize Tab
+
+```
+├── Chart Selector   → Bar, Line, Histogram, Scatter, Pie, Box Plot
+├── Axis Picker      → X axis, Y axis (dropdowns from column list)
+├── Optional Filters → color by column, group by column
+├── Chart Display    → rendered via Chart.js
+└── Download Chart   → PNG / SVG
+```
+
+---
+
+## 12. Report Tab
+
+```
+├── Auto-generated summary
+│   ├── Dataset overview (rows, cols, file size)
+│   ├── Data health (nulls, duplicates)
+│   ├── Per-column stats (type, mean, nulls, unique)
+│   └── Key insights (e.g. "Age has 12% nulls")
+├── Export Options   → Download as PDF / HTML
+└── Extra
+    ├── Session history → operations log
+    ├── Undo last operation
+    └── Reset to original uploaded file
+```
+
+---
+
+## 13. Flask Routes
+
+### Core
+| Method | Route | Action |
+|--------|-------|--------|
+| GET | `/` | Landing / home page |
+| POST | `/upload` | Upload file, create UUID session, save original.csv + working.pkl |
+| GET | `/reset` | Restore working.pkl from original.csv |
+| GET | `/dashboard` | File info, health card, overview table |
+
+### View Data
+| Method | Route | Action |
+|--------|-------|--------|
+| GET | `/view` | Paginated table (`?page=1&rows=25`) |
+
+### Clean
+| Method | Route | Action |
+|--------|-------|--------|
+| GET | `/clean` | Load clean tab |
+| POST | `/clean/fill-null` | Fill nulls for a column |
+| POST | `/clean/drop-null-rows` | Drop rows with nulls |
+| POST | `/clean/drop-column` | Drop a column |
+| POST | `/clean/rename-column` | Rename a column |
+| POST | `/clean/change-type` | Change column data type |
+| POST | `/clean/find-replace` | Find & replace values |
+| POST | `/clean/trim-whitespace` | Trim whitespace |
+| POST | `/clean/change-case` | Change case |
+| POST | `/clean/remove-duplicates` | Global duplicate removal |
+| GET | `/clean/preview` | Before / after comparison |
+| GET | `/clean/download` | Download cleaned CSV |
+
+### Transform
+| Method | Route | Action |
+|--------|-------|--------|
+| GET | `/transform` | Load transform tab |
+| POST | `/transform/new-column` | Create column via formula |
+| POST | `/transform/normalize` | Normalize / standardize |
+| POST | `/transform/encode` | Encode categorical |
+| POST | `/transform/bin` | Bin numeric column |
+| POST | `/transform/extract-datetime` | Extract from datetime |
+| POST | `/transform/apply-math` | Apply math operation |
+| GET | `/transform/preview` | Before / after |
+| GET | `/transform/download` | Download transformed CSV |
+
+### Visualize
+| Method | Route | Action |
+|--------|-------|--------|
+| GET | `/visualize` | Load visualize tab |
+| POST | `/visualize/generate` | Generate chart |
+| GET | `/visualize/download` | Download chart as PNG |
+
+### Report
+| Method | Route | Action |
+|--------|-------|--------|
+| GET | `/report` | Generate + display report |
+| GET | `/report/download/pdf` | Download as PDF |
+| GET | `/report/download/html` | Download as HTML |
+
+*All operation routes return JSON. Tab load routes return HTML templates.*
+
+---
+
+## 14. Build Order
+
+```
+Phase 1 — Foundation (current)
+├── Folder structure     ✅
+├── requirements.txt     ✅
+├── config.py            ✅
+├── .key                 ✅
+├── app.py               ← next
+└── file_handler.py
+
+Phase 2 — Feature by Feature
+├── Dashboard
+├── View Data
+├── Clean
+├── Transform
+├── Visualize
+└── Report
+```
+
+---
+
+## 15. Work Split
+
+| Who | What |
+|-----|------|
+| Aditya | All backend files, Flask blueprints, file handling logic, Pandas operations |
+| Claude | All HTML templates, CSS, JS / Fetch API calls, Chart.js integration |
