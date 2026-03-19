@@ -1,0 +1,9 @@
+flask
+flask-session
+pandas
+numpy
+openpyxl
+werkzeug
+python-dotenv
+fpdf2
+weasyprint
