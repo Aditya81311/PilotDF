@@ -10,7 +10,7 @@ def clean_null(df,column,method,custom_val = None):
         elif method == "median": 
             df[column] = df[column].fillna(df[column].median())
         elif method == "mode": 
-            df[column] = df[column].fillna(df[column].mode())
+            df[column] = df[column].fillna(df[column].mode()[0])
         elif method == "custom": 
             df[column] = df[column].fillna(custom_val)
         else: 
@@ -23,9 +23,9 @@ def drop_rows(df,scope,columnn = None):
     try:
         if scope == "any":
             df = df.dropna(how = "any")
-        if scope == "all":
+        elif scope == "all":
             df = df.dropna(how = "all")
-        if columnn:
+        elif columnn:
             df = df.dropna(subset = [columnn])
         return df
     except Exception as e:
@@ -57,18 +57,28 @@ def remove_duplicates(df,keep):
 
 def change_dtype(df,column,type_):
     try:
-        df[column] = df[column].astype(type_)
+        type_map = {
+            "int": "int64",
+            "float": "float64",
+            "str": "object",
+            "datetime": "datetime64[ns]"
+        }
+        mapped = type_map.get(type_, type_)
+        if type_ == "datetime":
+            df[column] = pd.to_datetime(df[column])
+        else :
+            df[column] = df[column].astype(mapped)
         return df
-    except TypeError as e:
-        error =  f"Cannot convert {df[column].astype()} to {type_}"
+    except Exception as e:
+        error =  f"Cannot convert to {type_}"
         return error
 
 def replace_val(df,column, find_val, replace_val, exact_match):
     try:
         if exact_match == True:
-            df = df[column].replace(find_val,replace_val)
+            df[column] = df[column].replace(find_val,replace_val)
         if exact_match == False:
-            df = df[column].str.replace(rf'{find_val}', replace_val, regex=True)
+            df[column] = df[column].str.replace(rf'{find_val}', replace_val, regex=True)
         return df
     except Exception as e:
         print(e)
