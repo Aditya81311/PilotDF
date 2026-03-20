@@ -96,12 +96,18 @@ function selectColumn(name, type, el) {
   badge.className   = `col-type-badge ${type}`;
 
   document.getElementById('toast').className = 'toast';
+  
+  selectedCol  = name;
+  selectedType = type;
+  localStorage.setItem('pilotdf-clean-col', name);  // ← add this line
+  // rest of your existing code...
+
 }
 
 // ── CHECK URL PARAM (from right-click in view tab) ──
 function checkUrlParam() {
   const params = new URLSearchParams(window.location.search);
-  const col    = params.get('col');
+  const col    = params.get('col') || localStorage.getItem('pilotdf-clean-col');
   if (col) {
     const item = document.querySelector(`.col-item[data-col="${col}"]`);
     if (item) item.click();
@@ -230,6 +236,12 @@ document.getElementById('undoBtn').addEventListener('click', async () => {
   });
   const data = await res.json();
   data.success ? showToast('Last operation undone') : showToast(data.error || 'Nothing to undo', 'error');
+  if (data.success) {
+    showToast('Last operation undone');
+    localStorage.removeItem('pilotdf-clean-col');  // clear so it doesn't try to restore
+    setTimeout(() => window.location.reload(), 800);
+}
+
 });
 
 // ── REORDER PANEL ────────────────────────────────
