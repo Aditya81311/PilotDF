@@ -6,7 +6,7 @@ from config import Config
 from blueprints.upload import upload_bp
 from blueprints.dashboard import dashboard_bp
 from blueprints.view import view_bp
-
+from blueprints.clean import clean_bp
 
 def create_app():
     app = Flask(__name__)
@@ -23,6 +23,7 @@ def create_app():
     app.register_blueprint(upload_bp)
     app.register_blueprint(dashboard_bp)
     app.register_blueprint(view_bp)
+    app.register_blueprint(clean_bp)
 
     return app
 

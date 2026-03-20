@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>PilotDF — Clean</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/clean.css') }}">
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <div class="nav-brand">
+      <span class="brand-icon">✈</span>
+      <span class="brand-name">PilotDF</span>
+    </div>
+    <div class="nav-links">
+      <a href="/dashboard" class="nav-link">Dashboard</a>
+      <a href="/view" class="nav-link">View Data</a>
+      <a href="/clean" class="nav-link active">Clean</a>
+      <a href="/transform" class="nav-link">Transform</a>
+      <a href="/visualize" class="nav-link">Visualize</a>
+      <a href="/report" class="nav-link">Report</a>
+    </div>
+    <div class="nav-actions">
+      <button class="theme-toggle" id="themeToggle"><span id="themeIcon">🌙</span></button>
+      <a href="/reset" class="btn-reset">Reset</a>
+    </div>
+  </nav>
+
+<!-- TOP ACTION BAR -->
+<div class="top-action-bar">
+  <span class="selected-info" id="selectedInfo">No column selected</span>
+  <button class="undo-btn" id="undoBtn">↩ Undo Last Operation</button>
+</div>
+  <!-- LAYOUT -->
+  <div class="layout">
+
+    <!-- LEFT SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <span class="sidebar-title">Columns</span>
+        <span class="sidebar-count" id="colCount">0</span>
+      </div>
+      <div class="sidebar-search">
+        <input type="text" id="colSearch" placeholder="Search columns..." class="search-input"/>
+      </div>
+      <div class="col-list" id="colList">
+        <!-- populated by JS from Jinja -->
+      </div>
+
+      <!-- GLOBAL OPERATIONS -->
+      <div class="global-section">
+        <div class="global-title">Global Operations</div>
+        <button class="global-btn" id="removeDupBtn">
+          <span>🗑</span> Remove Duplicates
+        </button>
+        <button class="global-btn danger" id="dropAllNullBtn">
+          <span>⚠</span> Drop All Null Rows
+        </button>
+      </div>
+    </aside>
+
+    <!-- MAIN PANEL -->
+    <main class="main-panel">
+
+      <!-- NO COLUMN SELECTED -->
+      <div class="empty-state" id="emptyState">
+        <div class="empty-icon">👈</div>
+        <div class="empty-title">Select a column</div>
+        <div class="empty-sub">Pick a column from the sidebar to start cleaning</div>
+      </div>
+
+      <!-- OPERATIONS PANEL -->
+      <div class="ops-panel" id="opsPanel" style="display:none;">
+
+        <!-- COLUMN HEADER -->
+        <div class="col-header">
+          <div class="col-header-left">
+            <span class="col-name" id="selectedColName">—</span>
+            <span class="col-type-badge" id="selectedColType">—</span>
+          </div>
+          <button class="undo-btn" id="undoBtn" title="Undo last operation">↩ Undo</button>
+        </div>
+
+        <!-- TOAST -->
+        <div class="toast" id="toast"></div>
+
+        <!-- ── FILL NULLS ── -->
+        <div class="op-card" id="opFillNull">
+          <div class="op-card-header">
+            <span class="op-title">Fill Null Values</span>
+            <span class="op-badge">Column</span>
+          </div>
+          <div class="op-body">
+            <div class="field-row">
+              <label class="field-label">Method</label>
+              <select class="field-select" id="fillMethod">
+                <option value="mean">Mean</option>
+                <option value="median">Median</option>
+                <option value="mode">Mode</option>
+                <option value="custom">Custom Value</option>
+              </select>
+            </div>
+            <div class="field-row" id="customValRow" style="display:none;">
+              <label class="field-label">Custom Value</label>
+              <input type="text" class="field-input" id="customVal" placeholder="Enter value"/>
+            </div>
+            <button class="apply-btn" id="applyFillNull">Apply</button>
+          </div>
+        </div>
+
+        <!-- ── DROP ROWS ── -->
+        <div class="op-card" id="opDropRows">
+          <div class="op-card-header">
+            <span class="op-title">Drop Rows with Nulls</span>
+            <span class="op-badge">Column</span>
+          </div>
+          <div class="op-body">
+            <div class="field-row">
+              <label class="field-label">Scope</label>
+              <select class="field-select" id="dropScope">
+                <option value="column">This column only</option>
+                <option value="any">Any null in row</option>
+                <option value="all">All values null in row</option>
+              </select>
+            </div>
+            <button class="apply-btn danger" id="applyDropRows">Apply</button>
+          </div>
+        </div>
+
+        <!-- ── RENAME COLUMN ── -->
+        <div class="op-card">
+          <div class="op-card-header">
+            <span class="op-title">Rename Column</span>
+            <span class="op-badge">Column</span>
+          </div>
+          <div class="op-body">
+            <div class="field-row">
+              <label class="field-label">New Name</label>
+              <input type="text" class="field-input" id="newColName" placeholder="Enter new column name"/>
+            </div>
+            <button class="apply-btn" id="applyRename">Apply</button>
+          </div>
+        </div>
+
+        <!-- ── CHANGE DATA TYPE ── -->
+        <div class="op-card">
+          <div class="op-card-header">
+            <span class="op-title">Change Data Type</span>
+            <span class="op-badge">Column</span>
+          </div>
+          <div class="op-body">
+            <div class="field-row">
+              <label class="field-label">New Type</label>
+              <select class="field-select" id="newDtype">
+                <option value="int">Integer</option>
+                <option value="float">Float</option>
+                <option value="str">String</option>
+                <option value="datetime">Datetime</option>
+              </select>
+            </div>
+            <button class="apply-btn" id="applyDtype">Apply</button>
+          </div>
+        </div>
+
+        <!-- ── FIND & REPLACE ── -->
+        <div class="op-card">
+          <div class="op-card-header">
+            <span class="op-title">Find & Replace</span>
+            <span class="op-badge">Column</span>
+          </div>
+          <div class="op-body">
+            <div class="field-row">
+              <label class="field-label">Find</label>
+              <input type="text" class="field-input" id="findVal" placeholder="Value to find"/>
+            </div>
+            <div class="field-row">
+              <label class="field-label">Replace with</label>
+              <input type="text" class="field-input" id="replaceVal" placeholder="Replace with"/>
+            </div>
+            <div class="field-row">
+              <label class="field-label">Exact Match</label>
+              <select class="field-select" id="exactMatch">
+                <option value="true">Yes</option>
+                <option value="false">No (partial)</option>
+              </select>
+            </div>
+            <button class="apply-btn" id="applyReplace">Apply</button>
+          </div>
+        </div>
+
+        <!-- ── TRIM WHITESPACE ── -->
+        <div class="op-card">
+          <div class="op-card-header">
+            <span class="op-title">Trim Whitespace</span>
+            <span class="op-badge">String only</span>
+          </div>
+          <div class="op-body">
+            <p class="op-desc">Removes leading and trailing spaces from all values in this column.</p>
+            <button class="apply-btn" id="applyTrim">Apply</button>
+          </div>
+        </div>
+
+        <!-- ── CHANGE CASE ── -->
+        <div class="op-card">
+          <div class="op-card-header">
+            <span class="op-title">Change Case</span>
+            <span class="op-badge">String only</span>
+          </div>
+          <div class="op-body">
+            <div class="field-row">
+              <label class="field-label">Case</label>
+              <select class="field-select" id="caseType">
+                <option value="upper">UPPER</option>
+                <option value="lower">lower</option>
+                <option value="title">Title</option>
+              </select>
+            </div>
+            <button class="apply-btn" id="applyCase">Apply</button>
+          </div>
+        </div>
+
+        <!-- ── DROP COLUMN ── -->
+        <div class="op-card danger-card">
+          <div class="op-card-header">
+            <span class="op-title">Drop Column</span>
+            <span class="op-badge danger">Destructive</span>
+          </div>
+          <div class="op-body">
+            <p class="op-desc">Permanently removes this column from the dataset.</p>
+            <button class="apply-btn danger" id="applyDropCol">Drop Column</button>
+          </div>
+        </div>
+
+      </div>
+    </main>
+
+    <!-- RIGHT PANEL — REORDER -->
+    <aside class="reorder-panel">
+      <div class="sidebar-header">
+        <span class="sidebar-title">Reorder Columns</span>
+      </div>
+      <p class="reorder-hint">Drag to reorder</p>
+      <div class="reorder-list" id="reorderList"></div>
+      <button class="apply-btn full" id="applyReorder">Apply Order</button>
+    </aside>
+
+  </div>
+
+  <!-- REMOVE DUPLICATES MODAL -->
+  <div class="modal-overlay" id="dupModal" style="display:none;">
+    <div class="modal">
+      <div class="modal-title">Remove Duplicates</div>
+      <div class="field-row">
+        <label class="field-label">Keep</label>
+        <select class="field-select" id="dupKeep">
+          <option value="first">First occurrence</option>
+          <option value="last">Last occurrence</option>
+        </select>
+      </div>
+      <div class="modal-actions">
+        <button class="apply-btn" id="confirmDup">Apply</button>
+        <button class="cancel-btn" id="cancelDup">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pass columns from Flask to JS -->
+  <script>
+    const COLUMNS = {{ columns | tojson }};
+  </script>
+  <script src="{{ url_for('static', filename='js/clean.js') }}"></script>
+</body>
+</html>
