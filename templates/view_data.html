@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>PilotDF — View Data</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/view_data.css') }}">
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <div class="nav-brand">
+      <span class="brand-icon">✈</span>
+      <span class="brand-name">PilotDF</span>
+    </div>
+    <div class="nav-links">
+      <a href="/dashboard" class="nav-link">Dashboard</a>
+      <a href="/view" class="nav-link active">View Data</a>
+      <a href="/clean" class="nav-link">Clean</a>
+      <a href="/transform" class="nav-link">Transform</a>
+      <a href="/visualize" class="nav-link">Visualize</a>
+      <a href="/report" class="nav-link">Report</a>
+    </div>
+    <div class="nav-actions">
+      <button class="theme-toggle" id="themeToggle" title="Toggle dark mode">
+        <span id="themeIcon">🌙</span>
+      </button>
+      <a href="/reset" class="btn-reset">Reset</a>
+    </div>
+  </nav>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <!-- TOP BAR -->
+    <div class="top-bar">
+      <span class="rows-info" id="rowsInfo">Loading...</span>
+      <div class="top-bar-right">
+        <label class="rows-label">Rows per page</label>
+        <select class="rows-select" id="rowsSelect">
+          <option value="25">25</option>
+          <option value="50">50</option>
+          <option value="100">100</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- TABLE CARD -->
+    <div class="table-card">
+      <div class="table-wrapper">
+        <table class="data-table">
+          <thead id="tableHead"></thead>
+          <tbody id="tableBody">
+            <tr><td colspan="100" class="loading-cell">Loading data...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- PAGINATION -->
+    <div class="pagination" id="pagination"></div>
+
+  </main>
+
+  <!-- RIGHT CLICK CONTEXT MENU -->
+  <div class="context-menu" id="contextMenu">
+    <div class="context-item" data-action="clean">🧹 Clean this column</div>
+    <div class="context-item" data-action="visualize">📊 Visualize this column</div>
+    <div class="context-item" data-action="transform">⚙️ Transform this column</div>
+  </div>
+
+  <script src="{{ url_for('static', filename='js/view_data.js') }}"></script>
+</body>
+</html>

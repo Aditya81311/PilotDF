@@ -5,6 +5,7 @@ from config import Config
 
 from blueprints.upload import upload_bp
 from blueprints.dashboard import dashboard_bp
+from blueprints.view import view_bp
 
 
 def create_app():
@@ -21,6 +22,7 @@ def create_app():
     # Register blueprints
     app.register_blueprint(upload_bp)
     app.register_blueprint(dashboard_bp)
+    app.register_blueprint(view_bp)
 
     return app
 
