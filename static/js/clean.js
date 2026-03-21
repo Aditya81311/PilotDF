@@ -303,7 +303,14 @@ document.getElementById('applyReorder').addEventListener('click', async () => {
     body: fd
   });
   const data = await res.json();
-  data.success ? showToast('Columns reordered successfully') : showToast(data.error, 'error');
+  if (data.success) {
+    showToast('Columns reordered successfully');
+    // rebuild sidebar and reorder list with new order
+    COLUMNS.sort((a, b) => new_order.indexOf(a.name) - new_order.indexOf(b.name));
+    buildSidebar(COLUMNS);
+  } else {
+    showToast(data.error, 'error');
+  }
 });
 
 // ── INIT ─────────────────────────────────────────
