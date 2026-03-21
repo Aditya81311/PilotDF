@@ -71,7 +71,7 @@ def change_dtype(df,column,type_):
         return df
     except Exception as e:
         error =  f"Cannot convert to {type_}"
-        return error
+        return error , df
 
 def replace_val(df,column, find_val, replace_val, exact_match):
     try:
@@ -107,7 +107,10 @@ def change_case(df,column,case):
         print(e)
 
 def reorder_columns(df, new_order):
-    # validate all columns exist
-    if set(new_order) != set(df.columns.tolist()):
-        raise ValueError("Column mismatch — new_order must contain all existing columns.")
-    return df[new_order]
+    # only keep columns that actually exist in df
+    valid_order = [col for col in new_order if col in df.columns.tolist()]
+    # add any missing columns at the end
+    for col in df.columns:
+        if col not in valid_order:
+            valid_order.append(col)
+    return df[valid_order]

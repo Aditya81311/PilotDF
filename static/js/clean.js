@@ -79,6 +79,11 @@ document.getElementById('colSearch').addEventListener('input', (e) => {
   });
 });
 
+document.querySelector('.btn-reset').addEventListener('click', (e) => {
+  if (!confirm('Reset will restore the original file and undo ALL operations. Are you sure?')) {
+    e.preventDefault();
+  }
+});
 // ── SELECT COLUMN ────────────────────────────────
 function selectColumn(name, type, el) {
   selectedCol  = name;
@@ -89,7 +94,11 @@ function selectColumn(name, type, el) {
 
   document.getElementById('emptyState').style.display = 'none';
   document.getElementById('opsPanel').style.display   = 'flex';
-
+  const ops = document.getElementById('opsPanel');
+  ops.style.display = 'flex';
+  ops.style.animation = 'none';
+  ops.offsetHeight; // force reflow
+  ops.style.animation = '';
   const badge = document.getElementById('selectedColType');
   document.getElementById('selectedColName').textContent = name;
   badge.textContent = type;
@@ -100,6 +109,7 @@ function selectColumn(name, type, el) {
   selectedCol  = name;
   selectedType = type;
   localStorage.setItem('pilotdf-clean-col', name);  // ← add this line
+  document.querySelector('.main-panel').scrollTop = 0;
   // rest of your existing code...
 
 }

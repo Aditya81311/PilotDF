@@ -214,7 +214,7 @@ def reorder_columns():
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         if request.method == "POST":
             df =load_df(session_folder)
-            new_order =request.form["new_order"]
+            new_order = request.form.getlist('new_order')
             df = clean_data.reorder_columns(df,new_order)
             save_df(df,session_folder)
             log_operation(session_folder, {
@@ -222,6 +222,7 @@ def reorder_columns():
                 "new_order": new_order
             })
             return jsonify({"success": True})
+
     return render_template('clean.html')
 @clean_bp.route("/clean-undo", methods=["POST"])
 def undo():
