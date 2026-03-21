@@ -127,4 +127,17 @@ def reapply_ops(df, log):
             df = clean_data.change_case(df, op["column"], op["case"])
         elif action == "reorder_columns":
             df = clean_data.reorder_columns(df, op["new_order"])
+            # transform operations
+        elif action == "new_column":
+            df = transform_data.new_column(df, op["new_col_name"], op["formula"])
+        elif action == "normalize":
+            df = transform_data.normalize(df, op["column"], op["method"])
+        elif action == "encode":
+            df = transform_data.encode(df, op["column"], op["method"], op["drop_first"])
+        elif action == "bin_numaric":
+            df = transform_data.bin_numaric(df, op["column"], op["bins"], op["labels"])
+        elif action == "extract_datetime":
+            df = transform_data.extract_datetime(df, op["column"], op["extract"])
+        elif action == "apply_math":
+            df = transform_data.apply_math(df, op["column"], op["operation"])
     return df

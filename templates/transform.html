@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>PilotDF — Transform</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/transform.css') }}">
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="nav-brand">
+      <span class="brand-icon">✈</span>
+      <span class="brand-name">PilotDF</span>
+    </div>
+    <div class="nav-links">
+      <a href="/dashboard" class="nav-link">Dashboard</a>
+      <a href="/view" class="nav-link">View Data</a>
+      <a href="/clean" class="nav-link">Clean</a>
+      <a href="/transform" class="nav-link active">Transform</a>
+      <a href="/visualize" class="nav-link">Visualize</a>
+      <a href="/report" class="nav-link">Report</a>
+    </div>
+    <div class="nav-actions">
+      <button class="undo-btn" id="undoBtn">↩ Undo</button>
+      <button class="theme-toggle" id="themeToggle"><span id="themeIcon">🌙</span></button>
+      <a href="/reset" class="btn-reset" id="resetBtn">Reset</a>
+    </div>
+  </nav>
+
+  <div class="layout">
+
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <span class="sidebar-title">Columns</span>
+        <span class="sidebar-count" id="colCount">0</span>
+      </div>
+      <div class="sidebar-search">
+        <input type="text" id="colSearch" placeholder="Search columns..." class="search-input"/>
+      </div>
+      <div class="col-list" id="colList"></div>
+      <div class="global-section">
+        <div class="global-title">Global</div>
+        <button class="global-btn" id="newColGlobalBtn">+ New Column</button>
+      </div>
+    </aside>
+<main class="main-panel">
+
+      <div class="empty-state" id="emptyState">
+        <div class="empty-icon">⚙️</div>
+        <div class="empty-title">Select a column to transform</div>
+        <div class="empty-sub">Or create a new column from a formula using the button below</div>
+      </div>
+
+      <div class="ops-panel" id="opsPanel" style="display:none;">
+
+        <div class="col-header">
+          <div class="col-header-left">
+            <span class="col-name" id="selectedColName">—</span>
+            <span class="col-type-badge" id="selectedColType">—</span>
+          </div>
+        </div>
+
+        <div class="toast" id="toast"></div>
+        <!-- NEW COLUMN -->
+        <div class="op-card" id="opNewCol">
+          <div class="op-card-header">
+            <span class="op-title">New Column from Formula</span>
+            <span class="op-badge">Global</span>
+          </div>
+          <div class="op-body">
+            <div class="field-row">
+              <label class="field-label">Column Name</label>
+              <input type="text" class="field-input" id="newColName" placeholder="e.g. total_price"/>
+            </div>
+            <div class="field-row">
+              <label class="field-label">Formula</label>
+              <input type="text" class="field-input" id="newColFormula" placeholder="e.g. price * quantity"/>
+            </div>
+            <p class="op-desc">Use existing column names in the formula. Supports +, -, *, /, ** operators.</p>
+            <button class="apply-btn" id="applyNewCol">Create Column</button>
+          </div>
+        </div>
+
+        <!-- NORMALIZE -->
+        <div class="op-card" id="opNormalize">
+          <div class="op-card-header">
+            <span class="op-title">Normalize / Standardize</span>
+            <span class="op-badge">Numeric only</span>
+          </div>
+          <div class="op-body">
+            <div class="field-row">
+              <label class="field-label">Method</label>
+              <select class="field-select" id="normalizeMethod">
+                <option value="minmax">Min-Max (0 to 1)</option>
+                <option value="zscore">Z-Score (mean=0, std=1)</option>
+              </select>
+            </div>
+            <button class="apply-btn" id="applyNormalize">Apply</button>
+          </div>
+        </div>
+
+        <!-- ENCODE -->
+        <div class="op-card" id="opEncode">
+          <div class="op-card-header">
+            <span class="op-title">Encode Categorical</span>
+            <span class="op-badge">String only</span>
+          </div>
+          <div class="op-body">
+            <div class="field-row">
+              <label class="field-label">Method</label>
+              <select class="field-select" id="encodeMethod">
+                <option value="label">Label Encoding (0, 1, 2...)</option>
+                <option value="onehot">One-Hot Encoding</option>
+              </select>
+            </div>
+            <div class="field-row" id="dropFirstRow">
+              <label class="field-label">Drop First</label>
+              <select class="field-select" id="dropFirst">
+                <option value="false">No (keep all columns)</option>
+                <option value="true">Yes (avoid multicollinearity)</option>
+              </select>
+            </div>
+            <button class="apply-btn" id="applyEncode">Apply</button>
+          </div>
+        </div>
+
+        <!-- BIN -->
+        <div class="op-card" id="opBin">
+          <div class="op-card-header">
+            <span class="op-title">Bin Numeric Column</span>
+            <span class="op-badge">Numeric only</span>
+          </div>
+          <div class="op-body">
+            <div class="field-row">
+              <label class="field-label">Number of Bins</label>
+              <input type="number" class="field-input" id="binCount" placeholder="e.g. 4" min="2"/>
+            </div>
+            <div class="field-row">
+              <label class="field-label">Labels</label>
+              <input type="text" class="field-input" id="binLabels" placeholder="e.g. low,medium,high (optional)"/>
+            </div>
+            <p class="op-desc">Labels count must match number of bins. Leave empty for default interval labels.</p>
+            <button class="apply-btn" id="applyBin">Apply</button>
+          </div>
+        </div>
+
+        <!-- EXTRACT DATETIME -->
+        <div class="op-card" id="opDatetime">
+          <div class="op-card-header">
+            <span class="op-title">Extract from Datetime</span>
+            <span class="op-badge">Datetime only</span>
+          </div>
+          <div class="op-body">
+            <div class="field-row">
+              <label class="field-label">Extract</label>
+              <select class="field-select" id="extractType">
+                <option value="year">Year</option>
+                <option value="month">Month</option>
+                <option value="day">Day</option>
+                <option value="weekday">Weekday</option>
+                <option value="hour">Hour</option>
+              </select>
+            </div>
+            <p class="op-desc">Creates a new column named e.g. "date_added_year".</p>
+            <p class="op-desc">Column must be datetime type. If not, go to Clean tab → Change Data Type → datetime first.</p>
+            <button class="apply-btn" id="applyExtract">Apply</button>
+          </div>
+        </div>
+
+        <!-- APPLY MATH -->
+        <div class="op-card" id="opMath">
+          <div class="op-card-header">
+            <span class="op-title">Apply Math Operation</span>
+            <span class="op-badge">Numeric only</span>
+          </div>
+          <div class="op-body">
+            <div class="field-row">
+              <label class="field-label">Operation</label>
+              <select class="field-select" id="mathOp">
+                <option value="log">Log (ln)</option>
+                <option value="sqrt">Square Root</option>
+                <option value="abs">Absolute Value</option>
+                <option value="square">Square (x²)</option>
+                <option value="round">Round</option>
+              </select>
+            </div>
+            <button class="apply-btn" id="applyMath">Apply</button>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const COLUMNS = {{ columns | tojson }};
+  </script>
+  <script src="{{ url_for('static', filename='js/transform.js') }}"></script>
+</body>
+</html>
