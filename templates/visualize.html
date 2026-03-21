@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>PilotDF — Visualize</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/visualize.css') }}">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.27.0/plotly.min.js"></script>
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="nav-brand">
+      <span class="brand-icon">✈</span>
+      <span class="brand-name">PilotDF</span>
+    </div>
+    <div class="nav-links">
+      <a href="/dashboard" class="nav-link">Dashboard</a>
+      <a href="/view" class="nav-link">View Data</a>
+      <a href="/clean" class="nav-link">Clean</a>
+      <a href="/transform" class="nav-link">Transform</a>
+      <a href="/visualize" class="nav-link active">Visualize</a>
+      <a href="/report" class="nav-link">Report</a>
+    </div>
+    <div class="nav-actions">
+      <button class="theme-toggle" id="themeToggle"><span id="themeIcon">🌙</span></button>
+      <a href="/reset" class="btn-reset" id="resetBtn">Reset</a>
+    </div>
+  </nav>
+
+  <div class="layout">
+
+    <!-- LEFT SIDEBAR -->
+    <aside class="controls-panel">
+      <div class="controls-header">
+        <span class="controls-title">Chart Builder</span>
+      </div>
+      <div class="controls-body">
+
+        <div class="control-group">
+          <label class="control-label">Chart Type</label>
+          <div class="chart-type-grid" id="chartTypeGrid">
+            <button class="chart-type-btn active" data-type="bar">📊 Bar</button>
+            <button class="chart-type-btn" data-type="line">📈 Line</button>
+            <button class="chart-type-btn" data-type="scatter">⚬ Scatter</button>
+            <button class="chart-type-btn" data-type="histogram">▬ Histogram</button>
+            <button class="chart-type-btn" data-type="pie">🥧 Pie</button>
+            <button class="chart-type-btn" data-type="box">▭ Box</button>
+          </div>
+        </div>
+
+        <div class="control-group">
+          <label class="control-label" id="xLabel">X Axis</label>
+          <select class="control-select" id="xAxis">
+            <option value="">— Select column —</option>
+          </select>
+        </div>
+
+        <div class="control-group" id="yAxisGroup">
+          <label class="control-label" id="yLabel">Y Axis</label>
+          <select class="control-select" id="yAxis">
+            <option value="">— Select column —</option>
+          </select>
+        </div>
+
+        <div class="control-group" id="binsGroup" style="display:none;">
+          <label class="control-label">Bins</label>
+          <input type="number" class="control-input" id="bins" value="10" min="2" max="100"/>
+        </div>
+
+        <div class="control-group" id="colorByGroup">
+          <label class="control-label">Color By <span style="color:var(--text-hint);font-weight:400">(optional)</span></label>
+          <select class="control-select" id="colorBy">
+            <option value="">— None —</option>
+          </select>
+        </div>
+
+        <div class="control-group" id="orientationGroup">
+          <label class="control-label">Orientation</label>
+          <select class="control-select" id="orientation">
+            <option value="vertical">Vertical</option>
+            <option value="horizontal">Horizontal</option>
+          </select>
+        </div>
+
+        <div class="control-group">
+          <label class="control-label">Title <span style="color:var(--text-hint);font-weight:400">(optional)</span></label>
+          <input type="text" class="control-input" id="chartTitle" placeholder="Chart title..."/>
+        </div>
+
+        <button class="generate-btn" id="generateBtn">+ Add Chart</button>
+        <div class="controls-error" id="controlsError" style="display:none;"></div>
+      </div>
+    </aside>
+
+    <!-- MAIN CANVAS -->
+    <main class="canvas-panel">
+
+      <div class="canvas-toolbar">
+        <span class="canvas-info" id="canvasInfo">No charts yet</span>
+        <div class="canvas-actions">
+          <button class="toolbar-btn" id="downloadAllBtn" style="display:none;">⬇ Download All</button>
+          <button class="toolbar-btn danger" id="clearAllBtn" style="display:none;">🗑 Clear All</button>
+        </div>
+      </div>
+
+      <div class="empty-state" id="emptyState">
+        <div class="empty-icon">📊</div>
+        <div class="empty-title">No charts yet</div>
+        <div class="empty-sub">Configure a chart on the left and click "+ Add Chart"</div>
+      </div>
+
+      <div class="charts-grid" id="chartsGrid"></div>
+
+    </main>
+  </div>
+
+  <script>
+    const COLUMNS = {{ columns | tojson }};
+  </script>
+  <script src="{{ url_for('static', filename='js/visualize.js') }}"></script>
+</body>
+</html>
