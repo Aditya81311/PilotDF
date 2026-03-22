@@ -9,6 +9,7 @@ from blueprints.view import view_bp
 from blueprints.clean import clean_bp
 from blueprints.transform import transform_bp
 from blueprints.visualize import visualize_bp
+from blueprints.report import report_bp
 
 def create_app():
     app = Flask(__name__)
@@ -28,6 +29,7 @@ def create_app():
     app.register_blueprint(clean_bp)
     app.register_blueprint(transform_bp)
     app.register_blueprint(visualize_bp)
+    app.register_blueprint(report_bp)
 
     return app
 

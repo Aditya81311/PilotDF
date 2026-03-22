@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>PilotDF — Report</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/report.css') }}">
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="nav-brand">
+      <span class="brand-icon">✈</span>
+      <span class="brand-name">PilotDF</span>
+    </div>
+    <div class="nav-links">
+      <a href="/dashboard" class="nav-link">Dashboard</a>
+      <a href="/view" class="nav-link">View Data</a>
+      <a href="/clean" class="nav-link">Clean</a>
+      <a href="/transform" class="nav-link">Transform</a>
+      <a href="/visualize" class="nav-link">Visualize</a>
+      <a href="/report" class="nav-link active">Report</a>
+    </div>
+    <div class="nav-actions">
+      <button class="theme-toggle" id="themeToggle"><span id="themeIcon">🌙</span></button>
+      <a href="/reset" class="btn-reset" id="resetBtn">Reset</a>
+    </div>
+  </nav>
+
+  <!-- REPORT TOOLBAR -->
+  <div class="report-toolbar">
+    <span class="toolbar-label">Auto-generated report</span>
+    <div class="toolbar-actions">
+      <a href="/report/download/html" class="toolbar-btn">⬇ Download HTML</a>
+      <a href="/report/download/pdf" class="toolbar-btn primary">⬇ Download PDF</a>
+    </div>
+  </div>
+
+  <!-- REPORT CONTENT -->
+  <main class="report-main">
+    <div class="report-frame">
+      {{ report_html | safe }}
+    </div>
+  </main>
+
+  <script src="{{ url_for('static', filename='js/report.js') }}"></script>
+</body>
+</html>
