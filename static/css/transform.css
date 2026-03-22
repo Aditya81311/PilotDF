@@ -35,7 +35,20 @@ a { text-decoration: none; color: inherit; }
 .undo-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 .btn-reset { font-size: 13px; font-weight: 500; color: var(--text-muted); background: var(--surface-2); border: 1px solid var(--border); padding: 6px 14px; border-radius: var(--radius-sm); transition: all 0.15s; }
 .btn-reset:hover { color: var(--danger); border-color: var(--danger); background: var(--danger-bg); }
-
+.btn-download {
+  font-size: 13px; font-weight: 500;
+  color: var(--purple-dark);
+  background: var(--purple-light);
+  border: 1px solid var(--purple-mid);
+  padding: 6px 14px;
+  border-radius: var(--radius-sm);
+  transition: all 0.15s;
+}
+.btn-download:hover {
+  background: var(--purple);
+  color: white;
+  border-color: var(--purple);
+}
 .layout { display: grid; grid-template-columns: var(--sidebar-w) 1fr; height: calc(100vh - var(--nav-h)); overflow: hidden; }
 
 .sidebar { background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; }

@@ -105,39 +105,42 @@ def get_file_info(session_folder, filename):
 
 def reapply_ops(df, log):
     from backend import clean_data
-    for op in log:
-        action = op.get("action")
-        if action == "clean_null":
-            df = clean_data.clean_null(df, op["column"], op["method"], op.get("custom_val"))
-        elif action == "drop_rows":
-            df = clean_data.drop_rows(df, op["scope"], op.get("column"))
-        elif action == "drop_column":
-            df = clean_data.drop_column(df, op["column"])
-        elif action == "rename_column":
-            df = clean_data.rename_column(df, op["column"], op["new_name"])
-        elif action == "remove_duplicates":
-            df = clean_data.remove_duplicates(df, op["keep"])
-        elif action == "change_dtype":
-            df = clean_data.change_dtype(df, op["column"], op["type_"])
-        elif action == "replace_val":
-            df = clean_data.replace_val(df, op["column"], op["find_val"], op["replace_val"], op["exact_match"])
-        elif action == "trim_space":
-            df = clean_data.trim_space(df, op["column"])
-        elif action == "change_case":
-            df = clean_data.change_case(df, op["column"], op["case"])
-        elif action == "reorder_columns":
-            df = clean_data.reorder_columns(df, op["new_order"])
-            # transform operations
-        elif action == "new_column":
-            df = transform_data.new_column(df, op["new_col_name"], op["formula"])
-        elif action == "normalize":
-            df = transform_data.normalize(df, op["column"], op["method"])
-        elif action == "encode":
-            df = transform_data.encode(df, op["column"], op["method"], op["drop_first"])
-        elif action == "bin_numaric":
-            df = transform_data.bin_numaric(df, op["column"], op["bins"], op["labels"])
-        elif action == "extract_datetime":
-            df = transform_data.extract_datetime(df, op["column"], op["extract"])
-        elif action == "apply_math":
-            df = transform_data.apply_math(df, op["column"], op["operation"])
+    try:
+        for op in log:
+            action = op.get("action")
+            if action == "clean_null":
+                df = clean_data.clean_null(df, op["column"], op["method"], op.get("custom_val"))
+            elif action == "drop_rows":
+                df = clean_data.drop_rows(df, op["scope"], op.get("column"))
+            elif action == "drop_column":
+                df = clean_data.drop_column(df, op["column"])
+            elif action == "rename_column":
+                df = clean_data.rename_column(df, op["column"], op["new_name"])
+            elif action == "remove_duplicates":
+                df = clean_data.remove_duplicates(df, op["keep"])
+            elif action == "change_dtype":
+                df = clean_data.change_dtype(df, op["column"], op["type_"])
+            elif action == "replace_val":
+                df = clean_data.replace_val(df, op["column"], op["find_val"], op["replace_val"], op["exact_match"])
+            elif action == "trim_space":
+                df = clean_data.trim_space(df, op["column"])
+            elif action == "change_case":
+                df = clean_data.change_case(df, op["column"], op["case"])
+            elif action == "reorder_columns":
+                df = clean_data.reorder_columns(df, op["new_order"])
+                # transform operations
+            elif action == "new_column":
+                df = transform_data.new_column(df, op["new_col_name"], op["formula"])
+            elif action == "normalize":
+                df = transform_data.normalize(df, op["column"], op["method"])
+            elif action == "encode":
+                df = transform_data.encode(df, op["column"], op["method"], op["drop_first"])
+            elif action == "bin_numaric":
+                df = transform_data.bin_numaric(df, op["column"], op["bins"], op["labels"])
+            elif action == "extract_datetime":
+                df = transform_data.extract_datetime(df, op["column"], op["extract"])
+            elif action == "apply_math":
+                df = transform_data.apply_math(df, op["column"], op["operation"])
+    except Exception as e:
+        print(e)
     return df

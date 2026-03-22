@@ -13,11 +13,10 @@ def clean_null(df,column,method,custom_val = None):
             df[column] = df[column].fillna(df[column].mode()[0])
         elif method == "custom": 
             df[column] = df[column].fillna(custom_val)
-        else: 
-            return df
-        return df
+        return {"status":"success","df":df}
     except Exception as e:
         print(e)
+        return {"status":"error","error":e}
 
 def drop_rows(df,scope,columnn = None):
     try:
@@ -27,23 +26,26 @@ def drop_rows(df,scope,columnn = None):
             df = df.dropna(how = "all")
         elif columnn:
             df = df.dropna(subset = [columnn])
-        return df
+        return {"status":"success","df":df}
     except Exception as e:
         print(e)
+        return {"status":"error","error":e}
 
 def drop_column(df,column):
     try:
         df = df.drop(columns = column)
-        return df
+        return {"status":"success","df":df}
     except Exception as e:
         print(e)
+        return {"status":"error","error":e}
 
 def rename_column(df,column,name):
     try:
         df = df.rename(columns = {column:name})
-        return df
+        return {"status":"success","df":df}
     except Exception as e:
         print(e)
+        return {"status":"error","error":e}
 
 def remove_duplicates(df,keep):
     try:
@@ -51,9 +53,10 @@ def remove_duplicates(df,keep):
             df = df.drop_duplicates()
         if keep =="last":
             df = df.drop_duplicates(keep = "last")
-        return df
+        return {"status":"success","df":df}
     except Exception as e:
         print(e)
+        return {"status":"error","error":e}
 
 def change_dtype(df,column,type_):
     try:
@@ -68,10 +71,11 @@ def change_dtype(df,column,type_):
             df[column] = pd.to_datetime(df[column])
         else :
             df[column] = df[column].astype(mapped)
-        return df
+        return {"status":"success","df":df}
     except Exception as e:
-        error =  f"Cannot convert to {type_}"
-        return error , df
+        e =  f"Cannot convert to {type_}"
+        print(e)
+        return {"status":"error","error":e}
 
 def replace_val(df,column, find_val, replace_val, exact_match):
     try:
@@ -79,9 +83,10 @@ def replace_val(df,column, find_val, replace_val, exact_match):
             df[column] = df[column].replace(find_val,replace_val)
         if exact_match == False:
             df[column] = df[column].str.replace(rf'{find_val}', replace_val, regex=True)
-        return df
+        return {"status":"success","df":df}
     except Exception as e:
         print(e)
+        return {"status":"error","error":e}
 
 def trim_space(df,column):
     try:
@@ -89,9 +94,10 @@ def trim_space(df,column):
             df[column] = df[column].str.strip()
         else:
             return f"Column {column} is not a string column"
-        return df
+        return {"status":"success","df":df}
     except Exception as e:
         print(e)
+        return {"status":"error","error":e}
 
 def change_case(df,column,case):
     try:
@@ -102,9 +108,10 @@ def change_case(df,column,case):
                 df[column] = df[column].str.lower()
             if case == "title":
                 df[column] = df[column].str.title()
-        return df
+        return {"status":"success","df":df}
     except Exception as e:
         print(e)
+        return {"status":"error","error":e}
 
 def reorder_columns(df, new_order):
     # only keep columns that actually exist in df

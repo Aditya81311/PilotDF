@@ -1,6 +1,6 @@
-from flask import Blueprint, request, redirect, url_for, session, jsonify, current_app
+from flask import Blueprint, request, redirect, url_for, session, jsonify, current_app ,Response
 from werkzeug.utils import secure_filename
-from backend.file_handler import save_upload
+from backend.file_handler import save_upload , load_df
 
 upload_bp = Blueprint('upload', __name__)
 
@@ -53,3 +53,23 @@ def reset():
     except Exception:
         pass
     return redirect(url_for('dashboard.dashboard'))
+
+@upload_bp.route('/download/csv')
+def download_csv():
+    session_folder = session.get('session_folder')
+    filename       = session.get('filename')
+    if not session_folder or not filename:
+        return redirect(url_for('upload.index'))
+    
+    try:
+        df        = load_df(session_folder)
+        csv_data  = df.to_csv(index=False)
+        safe_name = filename.replace('.xlsx', '.csv').replace('.xls', '.csv')
+        return Response(
+            csv_data,
+            mimetype='text/csv',
+            headers={'Content-Disposition': f'attachment; filename=cleaned_{safe_name}'}
+        )
+    except Exception as e:
+        print(e)
+        return redirect(url_for('dashboard.dashboard'))

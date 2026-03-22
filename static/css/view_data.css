@@ -72,6 +72,20 @@ a { text-decoration: none; color: inherit; }
 }
 .btn-reset:hover { color: #E24B4A; border-color: #E24B4A; background: #FCEBEB; }
 
+.btn-download {
+  font-size: 13px; font-weight: 500;
+  color: var(--purple-dark);
+  background: var(--purple-light);
+  border: 1px solid var(--purple-mid);
+  padding: 6px 14px;
+  border-radius: var(--radius-sm);
+  transition: all 0.15s;
+}
+.btn-download:hover {
+  background: var(--purple);
+  color: white;
+  border-color: var(--purple);
+}
 /* ── MAIN ───────────────────────────────────────── */
 .main {
   max-width: 1300px; margin: 0 auto;

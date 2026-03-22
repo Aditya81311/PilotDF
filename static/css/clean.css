@@ -63,6 +63,21 @@ a { text-decoration: none; color: inherit; }
   height: calc(100vh - var(--nav-h));
 }
 .selected-info { font-size: 13px; color: var(--text-muted); }
+
+.btn-download {
+  font-size: 13px; font-weight: 500;
+  color: var(--purple-dark);
+  background: var(--purple-light);
+  border: 1px solid var(--purple-mid);
+  padding: 6px 14px;
+  border-radius: var(--radius-sm);
+  transition: all 0.15s;
+}
+.btn-download:hover {
+  background: var(--purple);
+  color: white;
+  border-color: var(--purple);
+}
 /* ── LAYOUT ─────────────────────────────────────── */
 .layout {
   display: grid;
@@ -159,7 +174,11 @@ a { text-decoration: none; color: inherit; }
 /* TOAST */
 .toast {
   display: none; padding: 10px 16px; border-radius: var(--radius-sm);
-  font-size: 13px; font-weight: 500; margin-bottom: 0.5rem;
+  font-size: 13px; font-weight: 500;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  margin-bottom: 0.5rem;
 }
 .toast.success { display: block; background: var(--ok-bg); color: var(--ok); border: 1px solid rgba(15,110,86,0.2); }
 .toast.error { display: block; background: var(--danger-bg); color: var(--danger); border: 1px solid var(--danger-border); }

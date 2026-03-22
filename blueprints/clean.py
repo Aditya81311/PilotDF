@@ -29,15 +29,20 @@ def clean_null():
             column =request.form["column"]
             method = request.form["method"]
             custom_val = request.form["custom_val"] 
-            df = clean_data.clean_null(df,column,method,custom_val)
-            save_df(df,session_folder)
-            log_operation(session_folder, {
+            result = clean_data.clean_null(df,column,method,custom_val)
+            if result["status"] == "success":
+                df = result["df"]
+                save_df(df,session_folder)
+                log_operation(session_folder, {
                 "action": "clean_null",
                 "column": column,
                 "method": method,
                 "custom_val": custom_val
-            })
-            return jsonify({"success": True})
+                })
+                return jsonify({"success": True})
+            else:
+                error = result["error"]
+                return jsonify({"error":f"{error}"})
     return render_template('clean.html')
 
 @clean_bp.route("/clean-drop_rows",methods = ["GET","POST"])
@@ -51,14 +56,19 @@ def drop_rows():
             df =load_df(session_folder)
             scope = request.form["scope"]
             column =request.form["column"]
-            df = clean_data.drop_rows(df,scope,column)
-            save_df(df,session_folder)
-            log_operation(session_folder, {
+            result = clean_data.drop_rows(df,scope,column)
+            if result["status"] == "success":
+                df = result["df"]
+                save_df(df,session_folder)
+                log_operation(session_folder, {
                 "action": "drop_rows",
                 "scope": scope,
                 "column": column
-            })
-            return jsonify({"success": True})
+                })
+                return jsonify({"success": True})
+            else:
+                error = result["error"]
+                return jsonify({"error":f"{error}"})
     return render_template('clean.html')
 
 @clean_bp.route("/clean-drop_column",methods = ["GET","POST"])
@@ -71,13 +81,18 @@ def drop_column():
         if request.method == "POST":
             df =load_df(session_folder)
             column =request.form["column"]
-            df = clean_data.drop_column(df,column)
-            save_df(df,session_folder)
-            log_operation(session_folder, {
-                "action": "drop_column",
-                "column": column
-            })
-            return jsonify({"success": True})
+            result = clean_data.drop_column(df,column)
+            if result["status"] == "success":
+                df = result["df"]
+                save_df(df,session_folder)
+                log_operation(session_folder, {
+                    "action": "drop_column",
+                    "column": column
+                })
+                return jsonify({"success": True})
+            else:
+                error = result["error"]
+                return jsonify({"error":f"{error}"})
     return render_template('clean.html')
 
 @clean_bp.route("/clean-rename_column",methods = ["GET","POST"])
@@ -91,13 +106,18 @@ def rename_column():
             df =load_df(session_folder)
             column =request.form["column"]
             new_name =request.form["new_name"]
-            df = clean_data.rename_column(df,column,new_name)
-            save_df(df,session_folder)
-            log_operation(session_folder, {
-                "action": "rename_column",
-                "column": column
-            })
-            return jsonify({"success": True})
+            result = clean_data.rename_column(df,column,new_name)
+            if result["status"] == "success":
+                df = result["df"]
+                save_df(df,session_folder)
+                log_operation(session_folder, {
+                    "action": "rename_column",
+                    "column": column
+                })
+                return jsonify({"success": True})
+            else:
+                error = result["error"]
+                return jsonify({"error":f"{error}"})
     return render_template('clean.html')
 
 @clean_bp.route("/clean-remove_duplicates",methods = ["GET","POST"])
@@ -110,13 +130,18 @@ def remove_duplicates():
         if request.method == "POST":
             df =load_df(session_folder)
             keep =request.form["keep"]
-            df = clean_data.remove_duplicates(df,keep)
-            save_df(df,session_folder)
-            log_operation(session_folder, {
-                "action": "remove_duplicates",
-                "keep": keep
-            })
-            return jsonify({"success": True})
+            result = clean_data.remove_duplicates(df,keep)
+            if result["status"] == "success":
+                df = result["df"]
+                save_df(df,session_folder)
+                log_operation(session_folder, {
+                    "action": "remove_duplicates",
+                    "keep": keep
+                })
+                return jsonify({"success": True})
+            else:
+                error = result["error"]
+                return jsonify({"error":f"{error}"})
     return render_template('clean.html')
 
 @clean_bp.route("/clean-change_dtype",methods = ["GET","POST"])
@@ -130,14 +155,19 @@ def change_dtype():
             df =load_df(session_folder)
             column =request.form["column"]
             type_ =request.form["type_"]
-            df = clean_data.change_dtype(df,column,type_)
-            save_df(df,session_folder)
-            log_operation(session_folder, {
-                "action": "change_dtype",
-                "column": column,
-                "type_":type_
-            })
-            return jsonify({"success": True})
+            result = clean_data.change_dtype(df,column,type_)
+            if result["status"] == "success":
+                df = result["df"]
+                save_df(df,session_folder)
+                log_operation(session_folder, {
+                    "action": "change_dtype",
+                    "column": column,
+                    "type_":type_
+                })
+                return jsonify({"success": True})
+            else:
+                error = result["error"]
+                return jsonify({"error":f"{error}"})
     return render_template('clean.html')
 
 @clean_bp.route("/clean-replace_val",methods = ["GET","POST"])
@@ -153,16 +183,21 @@ def replace_val():
             find_val =request.form["find_val"]
             replace_val = request.form["replace_val"] 
             exact_match = request.form["exact_match"]
-            df = clean_data.replace_val(df,column, find_val, replace_val, exact_match)
-            save_df(df,session_folder)
-            log_operation(session_folder, {
-                "action": "replace_val",
-                "column": column,
-                "find_val":find_val,
-                "replace_val":replace_val,
-                "exact_match":exact_match
-            })
-            return jsonify({"success": True})
+            result = clean_data.replace_val(df,column, find_val, replace_val, exact_match)
+            if result["status"] == "success":
+                df = result["df"]
+                save_df(df,session_folder)
+                log_operation(session_folder, {
+                    "action": "replace_val",
+                    "column": column,
+                    "find_val":find_val,
+                    "replace_val":replace_val,
+                    "exact_match":exact_match
+                })
+                return jsonify({"success": True})
+            else:
+                error = result["error"]
+                return jsonify({"error":f"{error}"})
     return render_template('clean.html')
 
 @clean_bp.route("/clean-trim_space",methods = ["GET","POST"])
@@ -175,13 +210,18 @@ def trim_space():
         if request.method == "POST":
             df =load_df(session_folder)
             column =request.form["column"]
-            df = clean_data.trim_space(df,column)
-            save_df(df,session_folder)
-            log_operation(session_folder, {
-                "action": "trim_space",
-                "column": column
-            })
-            return jsonify({"success": True})
+            result = clean_data.trim_space(df,column)
+            if result["status"] == "success":
+                df = result["df"]
+                save_df(df,session_folder)
+                log_operation(session_folder, {
+                    "action": "trim_space",
+                    "column": column
+                })
+                return jsonify({"success": True})
+            else:
+                error = result["error"]
+                return jsonify({"error":f"{error}"})
     return render_template('clean.html')
 
 @clean_bp.route("/clean-change_case",methods = ["GET","POST"])
@@ -195,13 +235,20 @@ def change_case():
             df =load_df(session_folder)
             column =request.form["column"]
             case =request.form["case"]
-            df = clean_data.change_case(df,column,case)
-            save_df(df,session_folder)
-            log_operation(session_folder, {
-                "action": "change_case",
-                "column": column,
-                "case":case
-            })
+            result = clean_data.change_case(df,column,case)
+            if result["status"] == "success":
+                df = result["df"]
+                save_df(df,session_folder)
+                log_operation(session_folder, {
+                    "action": "change_case",
+                    "column": column,
+                    "case":case
+                })
+                return jsonify({"success": True})
+            else:
+                error = result["error"]
+                return jsonify({"error":f"{error}"})
+
             return jsonify({"success": True})
     return render_template('clean.html')
 
@@ -215,14 +262,18 @@ def reorder_columns():
         if request.method == "POST":
             df =load_df(session_folder)
             new_order = request.form.getlist('new_order')
-            df = clean_data.reorder_columns(df,new_order)
-            save_df(df,session_folder)
-            log_operation(session_folder, {
-                "action": "reorder_columns",
-                "new_order": new_order
-            })
-            return jsonify({"success": True})
-
+            result = clean_data.reorder_columns(df,new_order)
+            if result["status"] == "success":
+                df = result["df"]
+                save_df(df,session_folder)
+                log_operation(session_folder, {
+                    "action": "reorder_columns",
+                    "new_order": new_order
+                })
+                return jsonify({"success": True})
+            else:
+                error = result["error"]
+                return jsonify({"error":f"{error}"})
     return render_template('clean.html')
 @clean_bp.route("/clean-undo", methods=["POST"])
 def undo():
