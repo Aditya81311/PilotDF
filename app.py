@@ -1,8 +1,9 @@
 import os
 from flask import Flask
-from flask_session import Session
 from config import Config
+from extensions import db, jwt
 
+from blueprints.auth import auth_bp
 from blueprints.upload import upload_bp
 from blueprints.dashboard import dashboard_bp
 from blueprints.view import view_bp
@@ -15,14 +16,12 @@ def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
 
-    # Create required folders if they don't exist
     os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
-    os.makedirs(app.config['SESSION_FILE_DIR'], exist_ok=True)
 
-    # Init server-side session
-    Session(app)
+    db.init_app(app)
+    jwt.init_app(app)
 
-    # Register blueprints
+    app.register_blueprint(auth_bp)
     app.register_blueprint(upload_bp)
     app.register_blueprint(dashboard_bp)
     app.register_blueprint(view_bp)
@@ -31,8 +30,10 @@ def create_app():
     app.register_blueprint(visualize_bp)
     app.register_blueprint(report_bp)
 
-    return app
+    # with app.app_context():
+    #     db.create_all()
 
+    return app
 
 app = create_app()
 

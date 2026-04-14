@@ -11,7 +11,7 @@ __pycache__/
 *.pyo
 *.pyd
 *.pyc
-
+backend/__pycache__/
 # Flask
 instance/
 flask_session/
@@ -36,3 +36,7 @@ build/
 
 # Logs
 *.log
+
+frontend/node_modules/
+node_modules/
+frontend/public
